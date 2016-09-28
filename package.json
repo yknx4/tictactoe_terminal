@@ -1,0 +1,51 @@
+{
+  "name": "tictactoe_terminal",
+  "version": "1.0.0",
+  "description": "Tic Tac Toe Game in Terminal",
+  "main": "lib/main.js",
+  "scripts": {
+    "test": "npm run compile && npm run lint_tests && mocha test",
+    "compile": "npm run lint && babel --source-maps=both --comments=false --presets=es2015 -d lib/ src/",
+    "prepublish": "npm run compile",
+    "lint": "eslint src/",
+    "lint_tests": "eslint test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/yknx4/tictactoe_terminal.git"
+  },
+  "keywords": [
+    "tic",
+    "tac",
+    "toe",
+    "game",
+    "terminal"
+  ],
+  "author": "yknx4",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yknx4/tictactoe_terminal/issues"
+  },
+  "homepage": "https://github.com/yknx4/tictactoe_terminal#readme",
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-core": "^6.14.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babili": "0.0.5",
+    "eslint": "^3.5.0",
+    "eslint-config-google": "^0.6.0",
+    "mocha": "^3.0.2",
+    "unit.js": "^2.0.0"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.13.0",
+    "tictactoe_core": "^0.1.1",
+    "underscore": "^1.8.3"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ],
+    "sourceMap": "true"
+  }
+}
