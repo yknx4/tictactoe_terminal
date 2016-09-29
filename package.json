@@ -9,7 +9,7 @@
     "prepublish": "npm run compile",
     "lint": "eslint src/",
     "lint_tests": "eslint test/",
-    "start": "npm run compile && node lib/main.js"
+    "start": "node lib/main.js"
   },
   "repository": {
     "type": "git",
