@@ -2,6 +2,7 @@ import tictactoeCore from 'tictactoe_core'
 import Player from 'tictactoe_core/lib/Player'
 import prompt from 'prompt'
 import readlineSync from 'readline-sync'
+import _ from 'underscore'
 
 let playerPromptSchema = {
   properties: {
@@ -18,22 +19,14 @@ let playerPromptSchema = {
   }
 }
 
-var finished = false
-
-let game = tictactoeCore.default()
-let board = game.board
+let score = {}
+let players = []
 let turn = 1
 
-game.onWinnerListener = function(player) {
-  finished = true
-  if (player === null) {
-    console.log("Game was a draw");
-  } else {
-    console.log(`Player ${player.name} wins.`)
-  }
-}
-
-let players = []
+var finished
+let game
+let board
+initializeBoard()
 
 prompt.start();
 prompt.get(playerPromptSchema, function(err, result) {
@@ -50,10 +43,10 @@ prompt.get(playerPromptSchema, function(err, result) {
 
 function playNextTurn() {
   if (finished) {
+    promptNewGame()
     return
   }
   let turnData = nextTurn()
-  drawBoard()
   console.log(turnData.message);
   let x = readlineSync.questionInt('Column: ', {limit: number => {
     return number > 0 && number < board.width
@@ -67,6 +60,7 @@ function playNextTurn() {
     console.log(e.message);
     turn--
   } finally {
+    drawBoard()
     playNextTurn()
   }
 }
@@ -75,6 +69,7 @@ function createPlayer(id, name) {
   let player = new Player(id, name)
   players.push(player)
   game.addPlayer(player)
+  score[id] = 0
 }
 
 function nextTurn() {
@@ -83,18 +78,53 @@ function nextTurn() {
   return {message: `${player.name} (${player.id}) turn`, player: player}
 }
 
-// function returnInt(element) {
-//   return parseInt(element, 10);
-// }
-
 function drawBoard() {
   let board = game.board
+  process.stdout.write("\n");
   for (let x = board.width; x !== 0; x--) {
-    for (let y = board.height; y !== 0; y--) {
-      let cell = board.getCell(x, y) || '-'
-      process.stdout.write(cell);
+    for (let y = 1; y <= board.height; y++) {
+      let cell = board.getCell(x - 1, y - 1) || '_'
+      process.stdout.write(`${cell}\t`);
     }
     process.stdout.write("\n");
   }
   process.stdout.write("\n");
+}
+
+function promptNewGame() {
+  if (!readlineSync.keyInYN('Do you want to play another one?')) {
+    process.exit();
+    return
+  }
+  initializeBoard()
+  playNextTurn()
+}
+
+function onWinnerListener(player) {
+  finished = true
+  console.log('');
+  if (player === null) {
+    console.log("Game was a draw");
+  } else {
+    console.log(`${player.name} (${player.id}) wins.`)
+    score[player.id]++
+    _.each(players, printScore)
+  }
+  console.log('');
+}
+
+function printScore(player) {
+  console.log(`${player.name} wins: ${score[player.id]}`);
+}
+
+function initializeBoard() {
+  finished = false
+  game = tictactoeCore.default()
+  board = game.board
+  game.onWinnerListener = onWinnerListener
+  if (players.length > 0) {
+    _.each(players, function(player) {
+      game.addPlayer(player)
+    })
+  }
 }
